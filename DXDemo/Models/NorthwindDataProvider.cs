@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Collections;
+
+
+namespace DXDemo.Models
+{
+    // DXCOMMENT: Configure a data model (In this sample, we do this in file NorthwindDataProvider.cs. You would better create your custom file for a data model.)
+    public static class NorthwindDataProvider
+    {
+        const string NorthwindDataContextKey = "DXNorthwindDataContext";
+
+        public static NorthwindDataContext DB
+        {
+            get
+            {
+                if (HttpContext.Current.Items[NorthwindDataContextKey] == null)
+                    HttpContext.Current.Items[NorthwindDataContextKey] = new NorthwindDataContext();
+                return (NorthwindDataContext)HttpContext.Current.Items[NorthwindDataContextKey];
+            }
+        }
+
+        public static IEnumerable GetCustomers()
+        {
+            return from customer in DB.Customers select customer;
+
+        }
+        public static List<Customer> CustomerList()
+        {
+
+            return DB.Customers.ToList();
+        }
+        public static int?[] ListfromDatabase()
+        {
+
+            var Employeelist = (from o in DB.Orders
+
+                                select o.EmployeeID).Distinct().ToArray();
+
+            //var activemembers = (from c in DB.Customers
+            //                     where c.City == "London"
+            //                     select c).Count();
+            //var Data = new object[] { paidmembers, activemembers };
+            return Employeelist;
+        }
+    }
+    public static class DataSource
+    {
+        public static string[] Years = { "1996", "1997", "1998" };
+
+        public static Dictionary<string, string> EmployeeOrderCountList()
+        {
+            Dictionary<string,string > employeeDetail = new Dictionary<string, string>();
+            var list = NorthwindDataProvider.ListfromDatabase();
+            int Count;
+            foreach(int i in list)
+            {
+                Count = (from o in NorthwindDataProvider.DB.Orders
+                         where o.EmployeeID == i
+                         select o.CustomerID).Count();
+                employeeDetail.Add(i.ToString(), Count.ToString());
+            }
+
+            return employeeDetail;
+        }
+
+        public static object[] ToChartSeries(Dictionary<string,string> data)
+        {
+            var returnObject = new List<object>();
+            
+            foreach (var item in data)
+            {
+                returnObject.Add(new object[] { item.Key, item.Value});
+            }
+
+            return returnObject.ToArray();
+        }
+    }
+}
