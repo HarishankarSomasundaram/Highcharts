@@ -50,9 +50,9 @@ namespace DXDemo.Models
     {
         public static string[] Years = { "1996", "1997", "1998" };
 
-        public static Dictionary<string, string[]> EmployeeOrderCountList()
+        public static Dictionary<string, object[]> EmployeeOrderCountList()
         {
-            Dictionary<string, string[]> employeeDetail = new Dictionary<string, string[]>();
+            Dictionary<string, object[]> employeeDetail = new Dictionary<string, object[]>();
             var list = NorthwindDataProvider.ListfromDatabase();
             int Count;
             List<string> yearList = null;

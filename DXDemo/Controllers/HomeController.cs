@@ -28,11 +28,11 @@ namespace DXDemo.Controllers
             var ChartData = DataSource.EmployeeOrderCountList();
             //var allseries = DataSource.ToChartSeries(DataSource.Years,ChartData.Keys.ToArray(),ChartData.Values.);
 
-            Dictionary<string, string[]> series = new Dictionary<string, string[]>();
+            
 
-            Highcharts charts = GenerateChartModel.CreateChart(DataSource.Years,ChartData);
+            Highcharts charts = GenerateChartModel.CreateChart(DataSource.Years, ChartData);
 
-            return View();
+            return View(charts);
         }
 
         public ActionResult GridViewPartialView() 
