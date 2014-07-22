@@ -59,7 +59,7 @@ namespace DXDemo.Models
 
             foreach (int empID in list)
             {
-                yearList=new List<string>();
+                yearList = new List<string>();
                 foreach (string year in Years)
                 {
                     Count = (from o in NorthwindDataProvider.DB.Orders
@@ -67,24 +67,47 @@ namespace DXDemo.Models
                              select empID).Count();
                     yearList.Add(Count.ToString());
                 }
-                
+
                 employeeDetail.Add(empID.ToString(), yearList.ToArray());
                 yearList = null;
             }
 
             return employeeDetail;
         }
-
-        public static object[] ToChartSeries(Dictionary<string, string> data)
+        public static object[] PieDataSource()
         {
-            var returnObject = new List<object>();
+            //var list = NorthwindDataProvider.ListfromDatabase();
+            // List<string> yearList = null;
+            // foreach (int empID in list)
+            // {
+            //     yearList=new List<string>();
+            //     foreach (string year in Years)
+            //     {
+            //         Count = (from o in NorthwindDataProvider.DB.Orders
+            //                  where (o.OrderDate.Value.Year.ToString() == year) && (o.EmployeeID == empID)
+            //                  select empID).Count();
+            //         yearList.Add(Count.ToString());
+            //     }
 
-            foreach (var item in data)
-            {
-                returnObject.Add(new object[] { item.Key, item.Value });
-            }
-
-            return returnObject.ToArray();
+            //     employeeDetail.Add(empID.ToString(), yearList.ToArray());
+            //     yearList = null;
+            // }
+            return null;
         }
+
+        //    public static object[] ToChartSeries(Dictionary<string, string> data)
+        //    {
+        //        var returnObject = new List<object>();
+
+        //        foreach (var item in data)
+        //        {
+        //            returnObject.Add(new object[] { item.Key, item.Value });
+        //        }
+
+        //        return returnObject.ToArray();
+        //    }
+        //}
+
+
     }
 }
