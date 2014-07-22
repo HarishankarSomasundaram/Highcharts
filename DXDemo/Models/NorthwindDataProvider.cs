@@ -50,29 +50,38 @@ namespace DXDemo.Models
     {
         public static string[] Years = { "1996", "1997", "1998" };
 
-        public static Dictionary<string, string> EmployeeOrderCountList()
+        public static Dictionary<string, string[]> EmployeeOrderCountList()
         {
-            Dictionary<string,string > employeeDetail = new Dictionary<string, string>();
+            Dictionary<string, string[]> employeeDetail = new Dictionary<string, string[]>();
             var list = NorthwindDataProvider.ListfromDatabase();
             int Count;
-            foreach(int i in list)
+            List<string> yearList = null;
+
+            foreach (int empID in list)
             {
-                Count = (from o in NorthwindDataProvider.DB.Orders
-                         where o.EmployeeID == i
-                         select o.CustomerID).Count();
-                employeeDetail.Add(i.ToString(), Count.ToString());
+                yearList=new List<string>();
+                foreach (string year in Years)
+                {
+                    Count = (from o in NorthwindDataProvider.DB.Orders
+                             where (o.OrderDate.Value.Year.ToString() == year) && (o.EmployeeID == empID)
+                             select empID).Count();
+                    yearList.Add(Count.ToString());
+                }
+                
+                employeeDetail.Add(empID.ToString(), yearList.ToArray());
+                yearList = null;
             }
 
             return employeeDetail;
         }
 
-        public static object[] ToChartSeries(Dictionary<string,string> data)
+        public static object[] ToChartSeries(Dictionary<string, string> data)
         {
             var returnObject = new List<object>();
-            
+
             foreach (var item in data)
             {
-                returnObject.Add(new object[] { item.Key, item.Value});
+                returnObject.Add(new object[] { item.Key, item.Value });
             }
 
             return returnObject.ToArray();

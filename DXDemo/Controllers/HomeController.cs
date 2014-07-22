@@ -26,64 +26,13 @@ namespace DXDemo.Controllers
             
             
             var ChartData = DataSource.EmployeeOrderCountList();
-            var allseries = DataSource.ToChartSeries(ChartData);
+            //var allseries = DataSource.ToChartSeries(DataSource.Years,ChartData.Keys.ToArray(),ChartData.Values.);
 
+            Dictionary<string, string[]> series = new Dictionary<string, string[]>();
 
-            Highcharts chart = new Highcharts("chart")
-                 .InitChart(new Chart
-                 {
-                     DefaultSeriesType = ChartTypes.Line,
-                     MarginRight = 130,
-                     MarginBottom = 25,
-                     ClassName = "chart"
-                 })
-                 .SetTitle(new Title
-                 {
-                     Text = "Monthly Average Temperature",
-                     X = -20
-                 })
-                 .SetSubtitle(new Subtitle
-                 {
-                     Text = "Source: WorldClimate.com",
-                     X = -20
-                 })
-                 .SetXAxis(new XAxis { Categories = DataSource.Years })
-                 .SetYAxis(new YAxis
-                 {
-                     Title = new YAxisTitle { Text = "Total Orders Count" },
-                     PlotLines = new[]
-                    {
-                        new YAxisPlotLines
-                        {
-                            Value = 0,
-                            Width = 1,
-                            Color = ColorTranslator.FromHtml("#808080")
-                        }
-                    }
-                 })
-                 .SetTooltip(new Tooltip
-                 {
-                     Formatter = @"function() {
-                                        return '<b>'+ this.series.name +'</b><br/>'+
-                                    this.x +': '+ this.y +'°C';
-                                }"
-                 })
-                 .SetLegend(new Legend
-                 {
-                     Layout = Layouts.Vertical,
-                     Align = HorizontalAligns.Right,
-                     VerticalAlign = VerticalAligns.Top,
-                     X = -10,
-                     Y = 100,
-                     BorderWidth = 0
-                 })
-                 .SetSeries(new[] 
-                {
-                   new Series { Name = ChartData.FirstOrDefault().Key, Data = new Data(allseries) },
-                }
-                 );
+            Highcharts charts = GenerateChartModel.CreateChart(DataSource.Years,ChartData);
 
-            return View(chart);
+            return View();
         }
 
         public ActionResult GridViewPartialView() 
