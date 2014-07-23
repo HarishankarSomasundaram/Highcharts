@@ -14,5 +14,11 @@
         <elementListCompartment Id="c5abc30e-b3b2-42a6-96e1-d2a266a3f551" absoluteBounds="2.89, 1.585, 2.3449999999999998, 2.941609700520833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
+    <classShape Id="328c5762-a85e-4ac5-94db-90be9835d51e" absoluteBounds="5.5, 2.125, 2, 5.8092268880208326">
+      <DataClassMoniker Name="/NorthwindDataContext/Invoice" />
+      <nestedChildShapes>
+        <elementListCompartment Id="08a0c639-7e32-430d-bbc9-d9112bd0d94d" absoluteBounds="5.515, 2.585, 1.9700000000000002, 5.249226888020833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
   </nestedChildShapes>
 </ordesignerObjectsDiagram>

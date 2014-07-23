@@ -42,6 +42,29 @@ namespace DXDemo.Controllers
 
             return View(charts);
         }
+        [HttpPost]
+        public ActionResult Demo(List<String> values)
+        {
+            string xAxis = values[0];
+            string yAxis = values[1];
+            string series = values[2];
+
+         
+             object[] SeriesList = NorthwindDataProvider.DB.Invoices.Select(s =>
+                  
+                s.GetType().GetProperty(series).GetValue(s, null)
+             ).Distinct().ToArray();
+           var DistinctSeriesList=  SeriesList.Distinct().ToArray();
+            ChartProperty objChartProperty = new ChartProperty();
+            objChartProperty.Title = "Northwind Customer Order Chart";
+            objChartProperty.Subtitle = "Customer Details from Northwind";
+            objChartProperty.xAxisTitle = xAxis;
+            objChartProperty.yAxisTitle = yAxis;
+            objChartProperty.SeriesSet = GenerateChartModel.GetSeriesSet();
+            objChartProperty.xAxisData = DataSource.Years;
+
+            return View();
+        }
 
         public ActionResult GridViewPartialView()
         {
