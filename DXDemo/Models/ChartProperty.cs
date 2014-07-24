@@ -26,4 +26,10 @@ namespace DXDemo.Models
         public string Subtitle { get; set; }
         public Data[] PieData { get; set; }
     }
+    public class ChartObjects
+    {
+        public object[] objxAxis { get; set; }
+        public object[] objyAxis { get; set; }
+        public object[] objSeriesList { get; set; }
+    }
 }

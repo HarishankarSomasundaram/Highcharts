@@ -15,6 +15,7 @@ namespace DXDemo.Controllers
 {
     public class HomeController : Controller
     {
+        Series[] seriesSet = null;
         public ActionResult Index()
         {
             // DXCOMMENT: Pass a data model for GridView
@@ -42,6 +43,28 @@ namespace DXDemo.Controllers
 
             return View(charts);
         }
+
+        //public static Series[] GetSeriesSet()
+        //{
+
+
+        //    for (int i = 0; i < 3; i++)
+        //    {
+        //        int j = i + 1;
+        //        string name = "sample";
+        //        seriesSet[i] = new Series();
+        //        Random rnd = new Random();
+        //        List<object> li = new List<object>();
+        //        li.Add(rnd.Next(100).ToString());
+        //        li.Add((rnd.Next(100) + i * 23).ToString());
+        //        li.Add((rnd.Next(100) + i * 35).ToString());
+        //        object[] obj = li.ToArray();
+        //        name = name + j.ToString();
+        //        seriesSet[i].Name = name;
+        //        seriesSet[i].Data = new Data(obj);
+        //    }
+        //    return seriesSet;
+        //}
         [HttpPost]
         public ActionResult Demo(List<String> values)
         {
@@ -49,23 +72,58 @@ namespace DXDemo.Controllers
             string yAxis = values[1];
             string series = values[2];
 
-         
-             object[] SeriesList = NorthwindDataProvider.DB.Invoices.Select(s =>
-                  
-                s.GetType().GetProperty(series).GetValue(s, null)
-             ).Distinct().ToArray();
-           var DistinctSeriesList=  SeriesList.Distinct().ToArray();
+            ChartObjects oChatObj = new ChartObjects();
+            oChatObj.objSeriesList = NorthwindDataProvider.DB.Invoices.Select(s =>
+            s.GetType().GetProperty(series).GetValue(s, null)
+            ).ToArray();
+            oChatObj.objxAxis = NorthwindDataProvider.DB.Invoices.Select(s =>
+            s.GetType().GetProperty(xAxis).GetValue(s, null)
+            ).ToArray();
+            oChatObj.objyAxis = NorthwindDataProvider.DB.Invoices.Select(s =>
+            s.GetType().GetProperty(yAxis).GetValue(s, null)
+            ).ToArray();
+
+            var DistinctSeriesList = oChatObj.objSeriesList.Distinct().ToArray();
+            var DistinctxAxis = Array.ConvertAll<object, string>(oChatObj.objxAxis, ConvertObjectToString).Distinct().ToArray();
+            var DistinctyAxis = Array.ConvertAll<object, string>(oChatObj.objyAxis, ConvertObjectToString).Distinct().ToArray();
+
+            seriesSet = new Series[DistinctSeriesList.Count()];
+            int i = 0;
+            foreach (object DistinctSeries in DistinctSeriesList)
+            {
+                var dummyData = from a in NorthwindDataProvider.DB.Invoices
+                                where a.ShipCity == DistinctSeries.ToString()
+                                group a by a.Country into g
+                                select new { Country = g.Key, Count = g.Count() };
+                var DataDictionary = dummyData.ToDictionary(x => x.Country, x => x.Count);
+                seriesSet[i] = new Series();
+                seriesSet[i].Name = DistinctSeries.ToString();
+                var xaxis = dummyData.Select(x => x.Country).ToString();
+                var yaxis = dummyData.Select(y => y.Count).ToString();
+                object[] obj = { xaxis, yaxis };
+                seriesSet[i].Data = new Data(obj);
+                i++;
+            }
+
+            //   NorthwindDataProvider.DB.Invoices.Select(s => s.OrderID).ToArray();
+
+
+
             ChartProperty objChartProperty = new ChartProperty();
             objChartProperty.Title = "Northwind Customer Order Chart";
             objChartProperty.Subtitle = "Customer Details from Northwind";
             objChartProperty.xAxisTitle = xAxis;
             objChartProperty.yAxisTitle = yAxis;
-            objChartProperty.SeriesSet = GenerateChartModel.GetSeriesSet();
-            objChartProperty.xAxisData = DataSource.Years;
+            objChartProperty.SeriesSet = seriesSet;
+            objChartProperty.xAxisData = DistinctxAxis;
+            Highcharts charts = GenerateChartModel.BasicLine(objChartProperty);
 
-            return View();
+            return View(charts);
         }
-
+        string ConvertObjectToString(object obj)
+        {
+            return (obj == null) ? string.Empty : obj.ToString(); // FIXME
+        }
         public ActionResult GridViewPartialView()
         {
             // DXCOMMENT: Pass a data model for GridView in the PartialView method's second parameter

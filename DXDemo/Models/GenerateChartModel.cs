@@ -101,8 +101,7 @@ namespace DXDemo.Models
 
         public static Highcharts BasicArea(ChartProperty objChartProperty)
         {
-            Series[] SeriesSet = GetSeriesSet();
-          
+           
             
             Highcharts chart = new Highcharts("chart")
              .InitChart(new Chart { DefaultSeriesType = ChartTypes.Area })
@@ -141,15 +140,14 @@ namespace DXDemo.Models
                      }
                  }
              })
-             .SetSeries( SeriesSet);
+             .SetSeries(objChartProperty.SeriesSet);
 
             return chart;
         }
 
         public static Highcharts BasicBar(ChartProperty objChartProperty)
         {
-            Series[] SeriesSet = GetSeriesSet();
-
+           
 
             Highcharts chart = new Highcharts("chart")
                   .InitChart(new Chart { DefaultSeriesType = ChartTypes.Bar })
@@ -200,7 +198,7 @@ namespace DXDemo.Models
 
         public static Highcharts BasicColumn(ChartProperty objChartProperty)
         {
-            Series[] SeriesSet = GetSeriesSet();
+           // Series[] SeriesSet = GetSeriesSet();
 
             Highcharts chart = new Highcharts("chart")
                           .InitChart(new Chart { DefaultSeriesType = ChartTypes.Column })
