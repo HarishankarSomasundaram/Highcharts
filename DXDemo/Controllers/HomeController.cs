@@ -10,12 +10,18 @@ using DotNet.Highcharts.Options;
 using Point = DotNet.Highcharts.Options.Point;
 using DotNet.Highcharts;
 using System.Drawing;
+using System.Data;
+using System.Data.Entity.Core.Objects;
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace DXDemo.Controllers
 {
     public class HomeController : Controller
     {
         Series[] seriesSet = null;
+        SqlConnection con = null;
+
         public ActionResult Index()
         {
             // DXCOMMENT: Pass a data model for GridView
@@ -65,12 +71,78 @@ namespace DXDemo.Controllers
         //    }
         //    return seriesSet;
         //}
+        //[HttpPost]
+        //public JsonResult Demo(List<String> values)
+        //{
+
+
+        //    string xAxis = values[0];
+        //    string yAxis = values[1];
+        //    string series = values[2];
+
+        //    ChartObjects oChatObj = new ChartObjects();
+        //    oChatObj.objSeriesList = NorthwindDataProvider.DB.Invoices.Select(s =>
+        //    s.GetType().GetProperty(series).GetValue(s, null)
+        //    ).ToArray();
+        //    oChatObj.objxAxis = NorthwindDataProvider.DB.Invoices.Select(s =>
+        //    s.GetType().GetProperty(xAxis).GetValue(s, null)
+        //    ).ToArray();
+        //    oChatObj.objyAxis = NorthwindDataProvider.DB.Invoices.Select(s =>
+        //    s.GetType().GetProperty(yAxis).GetValue(s, null)
+        //    ).ToArray();
+
+        //    var DistinctSeriesList = oChatObj.objSeriesList.Distinct().ToArray();
+        //    var DistinctxAxis = Array.ConvertAll<object, string>(oChatObj.objxAxis, ConvertObjectToString).Distinct().ToArray();
+        //    var DistinctyAxis = Array.ConvertAll<object, string>(oChatObj.objyAxis, ConvertObjectToString).Distinct().ToArray();
+
+        //    seriesSet = new Series[DistinctSeriesList.Count()];
+        //    int i = 0;
+        //    foreach (object DistinctSeries in DistinctSeriesList)
+        //    {
+        //        var dummyData = from a in NorthwindDataProvider.DB.Invoices
+        //                        where a.ShipCity == DistinctSeries.ToString()
+        //                        group a by a.Country into g
+        //                        select new { Country = g.Key, Count = g.Count() };
+        //        var DataDictionary = dummyData.ToDictionary(x => x.Country, x => x.Count);
+        //        seriesSet[i] = new Series();
+        //        seriesSet[i].Name = DistinctSeries.ToString();
+        //        var xaxis = dummyData.Select(x => x.Country).ToString();
+        //        var yaxis = dummyData.Select(y => y.Count).ToString();
+        //        object[] obj = { xaxis, yaxis };
+        //        seriesSet[i].Data = new Data(obj);
+        //        i++;
+        //    }
+
+        //    //   NorthwindDataProvider.DB.Invoices.Select(s => s.OrderID).ToArray();
+
+
+
+        //    ChartProperty objChartProperty = new ChartProperty();
+        //    objChartProperty.Title = "Northwind Customer Order Chart";
+        //    objChartProperty.Subtitle = "Customer Details from Northwind";
+        //    objChartProperty.xAxisTitle = xAxis;
+        //    objChartProperty.yAxisTitle = yAxis;
+        //    objChartProperty.SeriesSet = seriesSet;
+        //    objChartProperty.xAxisData = DistinctxAxis;
+        //    Highcharts charts = GenerateChartModel.BasicLine(objChartProperty);
+
+        //    // return  View(charts);
+        //    // return View("DisplayChart", charts);
+        //    object msg = null;
+
+
+        //        msg = new
+        //        {
+        //            obj="success"
+        //        };
+
+        //    return Json(msg);
+
+        //}
+
         [HttpPost]
-        public ActionResult Demo(List<String> values)
+        public ActionResult Demo(string xAxis, string yAxis, string series)
         {
-            string xAxis = values[0];
-            string yAxis = values[1];
-            string series = values[2];
 
             ChartObjects oChatObj = new ChartObjects();
             oChatObj.objSeriesList = NorthwindDataProvider.DB.Invoices.Select(s =>
@@ -87,6 +159,15 @@ namespace DXDemo.Controllers
             var DistinctxAxis = Array.ConvertAll<object, string>(oChatObj.objxAxis, ConvertObjectToString).Distinct().ToArray();
             var DistinctyAxis = Array.ConvertAll<object, string>(oChatObj.objyAxis, ConvertObjectToString).Distinct().ToArray();
 
+
+        
+             con = new SqlConnection(ConfigurationManager.ConnectionStrings["NWindConnectionString1"].ConnectionString);
+            SqlCommand cmd = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;   //This will specify that we are passing query from application
+            string query = "select count(OrderDate) from Invoices where Country='Argentina' group by  ShipCity";
+            cmd.CommandText = query;
+            var sql = this.ExecuteSelectCommand(query, cmd.CommandType);
+            
             seriesSet = new Series[DistinctSeriesList.Count()];
             int i = 0;
             foreach (object DistinctSeries in DistinctSeriesList)
@@ -117,9 +198,45 @@ namespace DXDemo.Controllers
             objChartProperty.SeriesSet = seriesSet;
             objChartProperty.xAxisData = DistinctxAxis;
             Highcharts charts = GenerateChartModel.BasicLine(objChartProperty);
-
             return View(charts);
         }
+
+        public DataTable ExecuteSelectCommand(string CommandName, CommandType cmdType)
+        {
+            SqlCommand cmd = null;
+            DataTable table = new DataTable();
+
+            cmd = con.CreateCommand();
+
+            cmd.CommandType = cmdType;
+            cmd.CommandText = CommandName;
+
+            try
+            {
+                con.Open();
+
+                SqlDataAdapter da = null;
+                using (da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(table);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cmd = null;
+                con.Close();
+            }
+
+            return table;
+        }
+
+        
+
         string ConvertObjectToString(object obj)
         {
             return (obj == null) ? string.Empty : obj.ToString(); // FIXME

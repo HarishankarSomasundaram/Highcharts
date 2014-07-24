@@ -1,0 +1,53 @@
+﻿@model DotNet.Highcharts.Highcharts
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Demo</title>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/highcharts.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("button").on("click", function () {
+
+                alert('asgh');
+                var stringArray = new Array();
+                stringArray[0] = "Country";
+                stringArray[1] = "OrderDate";
+                stringArray[2] = "ShipCity";
+                var postData = { values: stringArray };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/Demo",
+                    data: postData,
+                    success: function (data) {
+                        debugger;
+                        alert(data.Result);
+                    },
+                    dataType: "json",
+                    traditional: true
+                });
+
+
+            });
+
+            // $("button").addClass("alert").appendTo(document.body);
+        });
+    </script>
+</head>
+<body>
+
+    <button id="btn">Click Me</button>
+    <div>
+        @(Model)
+    </div>
+</body>
+</html>

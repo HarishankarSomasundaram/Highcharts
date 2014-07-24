@@ -32,4 +32,13 @@ namespace DXDemo.Models
         public object[] objyAxis { get; set; }
         public object[] objSeriesList { get; set; }
     }
+    public class ChartAxis
+    {
+        public class User
+        {
+            public string AxisX { get; set; }
+            public string AxisY { get; set; }
+            public string Series { get; set; }
+        }
+    }
 }
